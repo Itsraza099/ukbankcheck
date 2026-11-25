@@ -1,0 +1,22 @@
+name: Release
+
+# Push a tag like v0.1.0 to build and publish to PyPI.
+# Uses PyPI trusted publishing: no API token is stored in GitHub.
+# One-time setup: add this repo as a trusted publisher on pypi.org
+# (workflow: release.yml, environment: pypi).
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv build
+      - uses: pypa/gh-action-pypi-publish@release/v1
