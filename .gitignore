@@ -39,3 +39,8 @@ audit/*.jsonl
 
 # Hypothesis test cache
 .hypothesis/
+
+# Built by `make web` / the Pages workflow
+web/*.whl
+web/wheel.json
+

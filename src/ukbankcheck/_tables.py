@@ -61,6 +61,14 @@ class ModulusTables:
         _check_no_overlaps(self.rules)
         object.__setattr__(self, "_starts", tuple(r.start for r in self.rules))
 
+    @classmethod
+    def from_text(cls, weights: str, substitutions: str = "") -> ModulusTables:
+        """Build tables from file contents (useful when there's no filesystem, e.g. a browser)."""
+        return cls(
+            rules=parse_weights(weights.splitlines()),
+            substitutions=parse_substitutions(substitutions.splitlines()),
+        )
+
     def rules_for(self, sort_code: str) -> list[WeightRule]:
         """Return the one or two rules for a sort code, in table order (empty if none).
 
@@ -144,7 +152,4 @@ def load_tables(directory: Path | None = None) -> ModulusTables:
         raise TablesNotFoundError(
             f"Vocalink tables not found in {directory}. Run `python -m ukbankcheck download` first."
         )
-    return ModulusTables(
-        rules=parse_weights(weights_path.read_text().splitlines()),
-        substitutions=parse_substitutions(subs_path.read_text().splitlines()),
-    )
+    return ModulusTables.from_text(weights_path.read_text(), subs_path.read_text())

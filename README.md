@@ -16,11 +16,18 @@ library that validates sort codes and account numbers using Vocalink's modulus-c
 | **Shows** | Python packaging, semantic versioning, property-based testing, strict typing, CI/CD to PyPI |
 | **Stack** | Python · uv · hatchling · pytest · Hypothesis · mypy --strict · ruff · GitHub Actions |
 
+**[Try the batch checker in your browser →](https://itsraza099.github.io/ukbankcheck/)**
+Upload a CSV of bank details and get results back. It runs entirely in your browser; your
+file is never uploaded.
+
 ```bash
 pip install ukbankcheck
 python -m ukbankcheck download              # once: fetch Vocalink's latest tables
 python -m ukbankcheck check 08-99-99 66374958
 # 08-99-99 66374958: valid
+
+python -m ukbankcheck check-file customers.csv -o checked.csv
+# 11 rows: 4 valid, 2 invalid, 1 not_checked, 2 needs_review, 2 bad_format
 ```
 
 ```python
@@ -47,6 +54,9 @@ check("12-34-56", "12345678").outcome  # Outcome.NOT_CHECKED: no rules for this 
 - **Safe data updates.** Vocalink's tables are downloaded, parsed and validated (sorted, no
   overlapping ranges) *before* being written atomically, so a bad download can't replace a
   good copy. ([decision 0002](docs/decisions/0002-modulus-weight-table.md))
+- **Privacy enforced, not promised.** The browser checker runs the same Python package
+  via Pyodide, and its Content Security Policy blocks any request to anywhere except the
+  page itself and the Pyodide CDN. ([decision 0004](docs/decisions/0004-in-browser-batch-checker.md))
 - **Property-based tests.** Alongside normal examples, Hypothesis generates hundreds of random
   inputs per run to prove rules like "formatting never changes the result" and "normalising
   twice equals normalising once". ([tests/test_properties.py](tests/test_properties.py))
@@ -63,7 +73,7 @@ check("12-34-56", "12345678").outcome  # Outcome.NOT_CHECKED: no rules for this 
 - [x] Table download with validation ([decision 0002](docs/decisions/0002-modulus-weight-table.md))
 - [x] Standard, double alternate and all 14 exceptions; 34/34 spec cases pass
 - [x] [`v0.1.0` on PyPI](https://pypi.org/project/ukbankcheck/)
-- [ ] Batch checker in the browser: upload a CSV, get results back, data never leaves the page ([decision 0004](docs/decisions/0004-in-browser-batch-checker.md))
+- [x] Batch checker in the browser: upload a CSV, get results back, data never leaves the page ([decision 0004](docs/decisions/0004-in-browser-batch-checker.md))
 - [ ] Nine- and ten-digit account numbers (bank-specific conversions)
 
 ## How I worked
@@ -86,5 +96,6 @@ Needs [uv](https://docs.astral.sh/uv/).
 make install   # create .venv and install dev tools
 make tables    # download Vocalink's tables into .vocalink/ (gitignored)
 make check     # ruff, mypy --strict, pytest with coverage
+make serve     # run the browser checker at http://localhost:8000
 ```
 </details>

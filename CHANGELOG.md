@@ -6,6 +6,13 @@ MINOR for new features, PATCH for fixes.
 
 ## [Unreleased]
 
+### Added
+- `ukbankcheck.batch.check_rows()`: check a whole CSV, keeping extra columns and adding
+  `outcome` and `reason`. Flags values Excel has probably damaged as `needs_review`.
+- `python -m ukbankcheck check-file IN.csv -o OUT.csv`.
+- `ModulusTables.from_text()` for building tables from file contents.
+- Browser batch checker in `web/`, deployed to GitHub Pages.
+
 ## [0.1.0] - 2026-11-25
 
 ### Added

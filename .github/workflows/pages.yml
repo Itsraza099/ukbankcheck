@@ -1,0 +1,43 @@
+name: Deploy web checker
+
+# Publishes web/ to GitHub Pages together with a wheel built from the same commit, so the
+# page always runs exactly the code that CI tested. Nothing in the page is server-side.
+
+on:
+  push:
+    branches: [main]
+    paths: ["web/**", "src/**", "pyproject.toml", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Build site
+        run: |
+          mkdir -p _site
+          cp -r web/. _site/
+          rm -f _site/*.whl _site/wheel.json
+          uv build --wheel --out-dir _site
+          wheel=$(cd _site && ls *.whl)
+          echo "{\"file\": \"$wheel\"}" > _site/wheel.json
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

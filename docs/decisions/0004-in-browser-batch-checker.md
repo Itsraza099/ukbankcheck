@@ -1,6 +1,6 @@
 # 0004. A batch checker that runs in the browser
 
-- Status: Proposed
+- Status: Proposed (built 2026-11-25)
 - Date: 2026-11-25
 
 ## Context
@@ -12,9 +12,19 @@ they must not be sent to a server.
 ## Decision
 - A **static page on GitHub Pages**. The user downloads a CSV template, fills it in, and
   opens it in the page. The file is read inside the browser tab; nothing is uploaded.
-- The page runs the **real Python package in the browser with Pyodide**, installing
-  `ukbankcheck` from PyPI, so the web version uses the same `check()` that passes
-  Vocalink's 34 test cases.
+- The page runs the **real Python package in the browser with Pyodide**. The batch logic
+  lives in the package (`ukbankcheck.batch`), shared with `python -m ukbankcheck check-file`,
+  so the web page and the CLI give identical results.
+- The deploy workflow **builds the wheel from the same commit** as the page and ships it
+  alongside it (changed during the build: the plan was to install from PyPI). The page
+  then always runs exactly the code CI tested, and web changes don't need a PyPI release.
+- A **Content Security Policy** in the page only allows scripts and network requests to the
+  page's own origin and the Pyodide CDN. This makes "your file goes nowhere" enforced by
+  the browser, not just promised.
+- Python runs on the **main thread, not a Web Worker**. A worker would keep the page
+  responsive on huge files, but a page's CSP doesn't cover workers on GitHub Pages (which
+  can't set HTTP headers), so the privacy guarantee would be weaker. Files are capped at
+  200,000 rows.
 - **Two modes:**
   - *Demo:* a few made-up rules and sample rows, clearly labelled, so anyone can try it
     instantly.
@@ -39,7 +49,6 @@ they must not be sent to a server.
   doesn't stop Excel's leading-zero damage. Start with CSV only.
 
 ## Consequences
-- Depends on the `v0.1.0` PyPI release existing.
 - First load downloads Pyodide (~10 MB) from a CDN, so it needs internet once.
 - Real mode asks users to fetch two files from Vocalink themselves: some friction, but it
   keeps the licence position from decision 0002.
