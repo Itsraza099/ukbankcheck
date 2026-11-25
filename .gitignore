@@ -36,3 +36,6 @@ audit/*.jsonl
 
 # Vocalink tables (downloaded, never committed)
 .vocalink/
+
+# Hypothesis test cache
+.hypothesis/

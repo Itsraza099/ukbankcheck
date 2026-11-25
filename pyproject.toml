@@ -1,6 +1,6 @@
 [project]
 name = "ukbankcheck"
-version = "0.1.0.dev0"
+version = "0.1.0"
 description = "Validate UK sort codes and account numbers using Vocalink modulus checking."
 readme = "README.md"
 license = "MIT"
@@ -9,7 +9,7 @@ requires-python = ">=3.10"
 authors = [{ name = "Raza" }]
 keywords = ["uk", "banking", "sort code", "modulus check", "validation"]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",

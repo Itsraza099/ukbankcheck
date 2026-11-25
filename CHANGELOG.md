@@ -6,6 +6,8 @@ MINOR for new features, PATCH for fixes.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-25
+
 ### Added
 - `check()`: full Vocalink modulus checking (spec v9.20): standard 10/11, double alternate
   and exceptions 1–14. Passes all 34 of Vocalink's published test cases.
