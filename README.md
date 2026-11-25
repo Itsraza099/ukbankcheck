@@ -60,8 +60,9 @@ check("12-34-56", "12345678").outcome  # Outcome.NOT_CHECKED: no rules for this 
 - [x] CI on Python 3.10–3.13, release workflow
 - [x] Table download with validation ([decision 0002](docs/decisions/0002-modulus-weight-table.md))
 - [x] Standard, double alternate and all 14 exceptions; 34/34 spec cases pass
-- [ ] Nine- and ten-digit account numbers (bank-specific conversions)
 - [ ] `v0.1.0` on PyPI
+- [ ] Batch checker in the browser: upload a CSV, get results back, data never leaves the page ([decision 0004](docs/decisions/0004-in-browser-batch-checker.md))
+- [ ] Nine- and ten-digit account numbers (bank-specific conversions)
 
 ## How I worked
 
