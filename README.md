@@ -5,7 +5,7 @@ library that validates sort codes and account numbers using Vocalink's modulus-c
 
 [![CI](https://github.com/Itsraza099/ukbankcheck/actions/workflows/ci.yml/badge.svg)](https://github.com/Itsraza099/ukbankcheck/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10–3.13-blue)
-![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-97%25-brightgreen)
 ![Licence](https://img.shields.io/badge/licence-MIT-lightgrey)
 
 | | |
@@ -15,17 +15,36 @@ library that validates sort codes and account numbers using Vocalink's modulus-c
 | **Shows** | Python packaging, semantic versioning, property-based testing, strict typing, CI/CD to PyPI |
 | **Stack** | Python · uv · hatchling · pytest · Hypothesis · mypy --strict · ruff · GitHub Actions |
 
+```bash
+python -m ukbankcheck download              # once: fetch Vocalink's latest tables
+python -m ukbankcheck check 08-99-99 66374958
+# 08-99-99 66374958: valid
+```
+
 ```python
-from ukbankcheck import normalise, is_well_formed
+from ukbankcheck import check, Outcome
 
-normalise("12-34-56", "123456")
-# BankDetails(sort_code='123456', account_number='00123456')
+result = check("08-99-99", "66374959")  # one digit wrong
+result.valid  # False
+result.outcome  # Outcome.INVALID
 
-is_well_formed("12 34 5", "12345678")   # False: only five sort-code digits
+check("12-34-56", "12345678").outcome  # Outcome.NOT_CHECKED: no rules for this sort code
 ```
 
 ## Engineering highlights
 
+- **Verified against the official test suite.** All 34 of Vocalink's published test cases
+  run in CI against freshly downloaded tables, covering every method and all 14 exceptions.
+  ([tests/test_spec_cases.py](tests/test_spec_cases.py))
+- **Found a contradiction in the spec.** The flowchart says exception 5 passes if *either*
+  check passes; the test cases require *both*. I followed the tests, and a planted-bug run
+  confirmed cases 23–25 catch the flowchart version.
+  ([decision 0003](docs/decisions/0003-four-outcomes-not-a-boolean.md))
+- **"Unknown" isn't "valid".** Results say whether a check actually ran (`NOT_CHECKED`,
+  `FOREIGN_CURRENCY`) instead of collapsing everything into `True`.
+- **Safe data updates.** Vocalink's tables are downloaded, parsed and validated (sorted, no
+  overlapping ranges) *before* being written atomically, so a bad download can't replace a
+  good copy. ([decision 0002](docs/decisions/0002-modulus-weight-table.md))
 - **Property-based tests.** Alongside normal examples, Hypothesis generates hundreds of random
   inputs per run to prove rules like "formatting never changes the result" and "normalising
   twice equals normalising once". ([tests/test_properties.py](tests/test_properties.py))
@@ -39,12 +58,14 @@ is_well_formed("12 34 5", "12345678")   # False: only five sort-code digits
 
 - [x] Input normalisation and shape checks
 - [x] CI on Python 3.10–3.13, release workflow
-- [ ] Vocalink weight table loading ([open decision](docs/decisions/0002-modulus-weight-table.md))
-- [ ] Standard, double-alternate and exception modulus checks
+- [x] Table download with validation ([decision 0002](docs/decisions/0002-modulus-weight-table.md))
+- [x] Standard, double alternate and all 14 exceptions; 34/34 spec cases pass
+- [ ] Nine- and ten-digit account numbers (bank-specific conversions)
 - [ ] `v0.1.0` on PyPI
 
 ## How I worked
 
+New to modulus checking? Start with [how it works](docs/how-modulus-checking-works.md).
 Every design choice has a short [decision record](docs/decisions/) covering the options
 considered and why one won. The [glossary](docs/glossary.md) is my own explanation of each
 concept, with examples from this code.
@@ -60,6 +81,7 @@ Needs [uv](https://docs.astral.sh/uv/).
 
 ```bash
 make install   # create .venv and install dev tools
+make tables    # download Vocalink's tables into .vocalink/ (gitignored)
 make check     # ruff, mypy --strict, pytest with coverage
 ```
 </details>

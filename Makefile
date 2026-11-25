@@ -1,4 +1,4 @@
-.PHONY: install lint format typecheck test check
+.PHONY: install lint format typecheck test check tables
 
 install:
 	uv sync
@@ -15,6 +15,10 @@ typecheck:
 	uv run mypy
 
 test:
-	uv run pytest
+	UKBANKCHECK_DATA_DIR=.vocalink uv run pytest
 
 check: lint typecheck test
+
+# Download Vocalink's tables into ./.vocalink (gitignored) for the spec tests.
+tables:
+	uv run python -m ukbankcheck download --dest .vocalink

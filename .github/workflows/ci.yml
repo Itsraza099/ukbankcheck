@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+env:
+  UKBANKCHECK_DATA_DIR: ${{ github.workspace }}/.vocalink
+  UKBANKCHECK_REQUIRE_TABLES: "1"
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -18,6 +22,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: uv sync --locked
+      - name: Download Vocalink tables
+        # Not committed to the repo (licence; see docs/decisions/0002). Fetching them
+        # here also means CI fails if Vocalink changes the page or the file format.
+        run: uv run python -m ukbankcheck download --dest "$UKBANKCHECK_DATA_DIR"
       - name: Lint
         run: |
           uv run ruff check .

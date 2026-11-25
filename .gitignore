@@ -33,3 +33,6 @@ audit/*.jsonl
 .DS_Store
 .idea/
 .vscode/
+
+# Vocalink tables (downloaded, never committed)
+.vocalink/
