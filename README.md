@@ -4,6 +4,7 @@
 library that validates sort codes and account numbers using Vocalink's modulus-checking rules.
 
 [![CI](https://github.com/Itsraza099/ukbankcheck/actions/workflows/ci.yml/badge.svg)](https://github.com/Itsraza099/ukbankcheck/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/ukbankcheck)](https://pypi.org/project/ukbankcheck/)
 ![Python](https://img.shields.io/badge/python-3.10–3.13-blue)
 ![Coverage](https://img.shields.io/badge/coverage-97%25-brightgreen)
 ![Licence](https://img.shields.io/badge/licence-MIT-lightgrey)
@@ -16,6 +17,7 @@ library that validates sort codes and account numbers using Vocalink's modulus-c
 | **Stack** | Python · uv · hatchling · pytest · Hypothesis · mypy --strict · ruff · GitHub Actions |
 
 ```bash
+pip install ukbankcheck
 python -m ukbankcheck download              # once: fetch Vocalink's latest tables
 python -m ukbankcheck check 08-99-99 66374958
 # 08-99-99 66374958: valid
@@ -60,7 +62,7 @@ check("12-34-56", "12345678").outcome  # Outcome.NOT_CHECKED: no rules for this 
 - [x] CI on Python 3.10–3.13, release workflow
 - [x] Table download with validation ([decision 0002](docs/decisions/0002-modulus-weight-table.md))
 - [x] Standard, double alternate and all 14 exceptions; 34/34 spec cases pass
-- [ ] `v0.1.0` on PyPI
+- [x] [`v0.1.0` on PyPI](https://pypi.org/project/ukbankcheck/)
 - [ ] Batch checker in the browser: upload a CSV, get results back, data never leaves the page ([decision 0004](docs/decisions/0004-in-browser-batch-checker.md))
 - [ ] Nine- and ten-digit account numbers (bank-specific conversions)
 
